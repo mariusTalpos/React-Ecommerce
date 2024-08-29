@@ -1,9 +1,8 @@
-import './categories-container.styles.scss'
-import CategoryItem from '../category-item/category-item.component';
 
+import Directory from '../../components/directory/directory.component';
+import { Outlet } from 'react-router-dom';
 
-const CategoriesContainer = () => {
-
+const Home = () => {
   const categories = [
     {
       "id": 1,
@@ -32,12 +31,11 @@ const CategoriesContainer = () => {
     }
   ]
   return (
-    <div className="categories-container">
-      {categories.map((category) => (
-        <CategoryItem key={category.id} category={category}></CategoryItem>
-      ))}
+    <div className="App">
+      <Outlet></Outlet>
+      <Directory categories={categories}></Directory>
     </div>
-  )
+  );
 }
 
-export default CategoriesContainer
+export default Home
