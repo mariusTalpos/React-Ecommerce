@@ -1,5 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from 'firebase/firestore'
 
 import {
   getAuth,
@@ -23,6 +29,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 
+const db = getFirestore()
+
 const provider = new GoogleAuthProvider()
 
 provider.setCustomParameters({
@@ -31,3 +39,29 @@ provider.setCustomParameters({
 
 export const auth = getAuth() // singleton because we only need one auth service
 export const signInWithGooglePopup = ()=> signInWithPopup(auth, provider) // providers can be of many kinds with different parameters
+
+export const createUserDocumentFromAuth = async (userAuth) => {
+  const userDocRef = doc(db, 'users', userAuth.uid) // gets a refrence instance with a path
+
+  console.log(userDocRef)
+
+  const userSnapShot = await getDoc(userDocRef) // reads the reference
+  console.log(userSnapShot)
+
+  if(!userSnapShot.exists()) { // if it doesn't exist already then create it
+    const {displayName, email} = userAuth // get the name and email from Google Auth
+    const createdAt = new Date();
+
+    try {
+      await setDoc(userDocRef, {
+        displayName,
+        email,
+        createdAt
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  return userDocRef
+}
